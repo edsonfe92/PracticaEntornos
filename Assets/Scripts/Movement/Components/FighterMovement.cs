@@ -39,15 +39,19 @@ namespace Movement.Components
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
         }
-
-        void Update()
+        [ServerRpc]
+        void AnimacionesServerRpc()
         {
-            if (!IsOwner) return;
-            
             _grounded = Physics2D.OverlapCircle(_feet.position, 0.1f, _floor);
             _animator.SetFloat(AnimatorSpeed, this._direction.magnitude);
             _animator.SetFloat(AnimatorVSpeed, this._rigidbody2D.velocity.y);
             _animator.SetBool(AnimatorGrounded, this._grounded);
+        }
+        void Update()
+        {
+            if (!IsOwner) return;
+
+            AnimacionesServerRpc();
         }
 
         void FixedUpdate()
@@ -55,7 +59,8 @@ namespace Movement.Components
             _rigidbody2D.velocity = new Vector2(_direction.x, _rigidbody2D.velocity.y);
         }
 
-        public void Move(IMoveableReceiver.Direction direction)
+        [ServerRpc]
+        public void MoveServerRpc(IMoveableReceiver.Direction direction)
         {
             if (direction == IMoveableReceiver.Direction.None)
             {
@@ -68,7 +73,8 @@ namespace Movement.Components
             transform.localScale = new Vector3(lookingRight ? 1 : -1, 1, 1);
         }
 
-        public void Jump(IJumperReceiver.JumpStage stage)
+        [ServerRpc]
+        public void JumpServerRpc(IJumperReceiver.JumpStage stage)
         {
             switch (stage)
             {
@@ -83,13 +89,13 @@ namespace Movement.Components
                     break;
             }
         }
-
-        public void Attack1()
+        [ServerRpc]
+        public void Attack1ServerRpc()
         {
             _networkAnimator.SetTrigger(AnimatorAttack1);
         }
-
-        public void Attack2()
+        [ServerRpc]
+        public void Attack2ServerRpc()
         {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
