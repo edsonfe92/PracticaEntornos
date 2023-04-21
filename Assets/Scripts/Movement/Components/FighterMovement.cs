@@ -13,6 +13,9 @@ namespace Movement.Components
         public float speed = 1.0f;
         public float jumpAmount = 1.0f;
 
+
+        private NetworkVariable<int> currentLife = new NetworkVariable<int>();
+
         private Rigidbody2D _rigidbody2D;
         private Animator _animator;
         private NetworkAnimator _networkAnimator;
@@ -36,6 +39,8 @@ namespace Movement.Components
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
 
+
+             
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
         }
