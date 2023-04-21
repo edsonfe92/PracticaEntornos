@@ -5,16 +5,13 @@ using UnityEngine.Serialization;
 
 namespace Movement.Components
 {
-    [RequireComponent(typeof(Rigidbody2D)),
+    [RequireComponent(typeof(Rigidbody2D)), 
      RequireComponent(typeof(Animator)),
      RequireComponent(typeof(NetworkObject))]
     public sealed class FighterMovement : NetworkBehaviour, IMoveableReceiver, IJumperReceiver, IFighterReceiver
     {
         public float speed = 1.0f;
         public float jumpAmount = 1.0f;
-
-        private NetworkVariable<int> currentLife = new NetworkVariable<int>();
-
 
         private Rigidbody2D _rigidbody2D;
         private Animator _animator;
@@ -24,7 +21,7 @@ namespace Movement.Components
 
         private Vector3 _direction = Vector3.zero;
         private bool _grounded = true;
-
+        
         private static readonly int AnimatorSpeed = Animator.StringToHash("speed");
         private static readonly int AnimatorVSpeed = Animator.StringToHash("vspeed");
         private static readonly int AnimatorGrounded = Animator.StringToHash("grounded");
@@ -35,8 +32,6 @@ namespace Movement.Components
 
         void Start()
         {
-            currentLife.Value = 200;
-
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
@@ -104,22 +99,15 @@ namespace Movement.Components
         {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
-        [ServerRpc]
-        public void TakeHitServerRpc(int damage)
+
+        public void TakeHit()
         {
             _networkAnimator.SetTrigger(AnimatorHit);
-            ChangeHP(-damage);
-            Debug.Log("DAÑO: " + currentLife.Value);
         }
 
         public void Die()
         {
             _networkAnimator.SetTrigger(AnimatorDie);
-        }
-
-        public void ChangeHP(int hp) 
-        {
-            currentLife.Value += hp;
         }
     }
 }

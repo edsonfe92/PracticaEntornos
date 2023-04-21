@@ -21,7 +21,7 @@ namespace Fighting
             // TODO: Review if this is the best way to do this
             IFighterReceiver enemy = otherObject.GetComponent<IFighterReceiver>();
             if(enemy != null )
-                enemy.TakeHitServerRpc(20);
+                enemy.TakeHit();
         }
     }
 }
