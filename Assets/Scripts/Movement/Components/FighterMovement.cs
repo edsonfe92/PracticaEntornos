@@ -15,6 +15,7 @@ namespace Movement.Components
 
         private NetworkVariable<int> currentLife = new NetworkVariable<int>();
 
+        GameObject aa;
 
         private Rigidbody2D _rigidbody2D;
         private Animator _animator;
@@ -41,6 +42,8 @@ namespace Movement.Components
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
 
+
+             
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
         }
