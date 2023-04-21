@@ -9,6 +9,7 @@ namespace UI
         public GameObject debugPanel;
         public Button hostButton;
         public Button clientButton;
+        public GameObject timeCanvas;
 
         private void Start()
         {
@@ -20,6 +21,7 @@ namespace UI
         {
             NetworkManager.Singleton.StartHost();
             debugPanel.SetActive(false);
+            timeCanvas.SetActive(true);
         }
 
         private void OnClientButtonClicked()
