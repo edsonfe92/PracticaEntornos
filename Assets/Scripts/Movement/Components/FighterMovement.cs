@@ -13,7 +13,7 @@ namespace Movement.Components
         public float speed = 1.0f;
         public float jumpAmount = 1.0f;
 
-        private NetworkVariable<int> currentLife = new NetworkVariable<int>();
+        [SerializeField] private NetworkVariable<int> currentLife = new NetworkVariable<int>();
 
         GameObject aa;
 
