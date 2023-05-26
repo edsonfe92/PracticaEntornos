@@ -1,18 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerName : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public string name;
+    public TMP_Text playerNameText;
+
+    public Transform playerTransform;
+
     void Start()
     {
-        
+
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        playerNameText.text = name;
+        transform.localPosition = new Vector3(playerTransform.localPosition.x, playerTransform.localPosition.y + 0.5f, playerTransform.localPosition.z);
     }
 }

@@ -8,16 +8,19 @@ namespace Netcode
 {
     public class PlayerNetworkConfig : NetworkBehaviour
     {
-        public GameObject characterPrefab;
+
 
         private int nextIndex = 0;
+
+        public GameObject characterPrefab;
+        public GameObject nombrePrefab;
 
         public override void OnNetworkSpawn()
         {
             if (!IsOwner) return;
             InstantiateCharacterServerRpc(OwnerClientId);
         }
-    
+
         [ServerRpc]
         public void InstantiateCharacterServerRpc(ulong id)
         {
@@ -28,7 +31,16 @@ namespace Netcode
             //characterGameObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(id);
             characterGameObject.transform.SetParent(transform, false);
 
+
             nextIndex++;
+
+            GameObject nombreGameObject = Instantiate(nombrePrefab);
+            nombreGameObject.transform.SetParent(transform, false);
+            //Vector3 pos = characterGameObject.transform.position;
+            //nombreGameObject.transform.position = pos;
+            nombreGameObject.GetComponent<PlayerName>().playerTransform = characterGameObject.transform;
+
+
         }
     }
 }

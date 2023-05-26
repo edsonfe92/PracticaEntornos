@@ -7,6 +7,7 @@ namespace Fighting
     public class Weapon : MonoBehaviour
     {
         public Animator effectsPrefab;
+        public int weaponDamage = 20;
         private static readonly int Hit03 = Animator.StringToHash("hit03");
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -19,9 +20,11 @@ namespace Fighting
             effect.SetTrigger(Hit03);
 
             // TODO: Review if this is the best way to do this
-            IFighterReceiver enemy = otherObject.GetComponent<IFighterReceiver>();
-            if(enemy != null )
-                enemy.TakeHitServerRpc(20);
+            IFighterReceiver enemy = otherObject.GetComponent<IFighterReceiver>();            
+            enemy?.TakeHitServerRpc(weaponDamage);
+
+            
+            
         }
     }
 }
