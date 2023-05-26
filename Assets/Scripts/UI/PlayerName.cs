@@ -5,21 +5,19 @@ using TMPro;
 
 public class PlayerName : MonoBehaviour
 {
-
     public string name;
     public TMP_Text playerNameText;
 
+    public Transform playerTransform;
 
-
-    // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
-    // Update is called once per frame
     void Update()
     {
         playerNameText.text = name;
+        transform.localPosition = new Vector3(playerTransform.localPosition.x, playerTransform.localPosition.y + 0.5f, playerTransform.localPosition.z);
     }
 }
