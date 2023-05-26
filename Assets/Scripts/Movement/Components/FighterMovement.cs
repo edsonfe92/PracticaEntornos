@@ -13,9 +13,8 @@ namespace Movement.Components
         public float speed = 1.0f;
         public float jumpAmount = 1.0f;
 
-        [SerializeField] private NetworkVariable<int> currentLife = new NetworkVariable<int>();
-
-        GameObject aa;
+        [SerializeField] public NetworkVariable<int> currentLife = new NetworkVariable<int>();
+        
 
         private Rigidbody2D _rigidbody2D;
         private Animator _animator;
@@ -41,8 +40,6 @@ namespace Movement.Components
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
-
-
              
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
@@ -100,20 +97,35 @@ namespace Movement.Components
         [ServerRpc]
         public void Attack1ServerRpc()
         {
+            AttackAnimationClientRPC();
+        }
+        [ClientRpc]
+        public void AttackAnimationClientRPC() 
+        {
             _networkAnimator.SetTrigger(AnimatorAttack1);
         }
         [ServerRpc]
         public void Attack2ServerRpc()
+        {
+            Attack2AnimationClientRPC();
+        }
+        [ClientRpc]
+        public void Attack2AnimationClientRPC()
         {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
         [ServerRpc]
         public void TakeHitServerRpc(int damage)
         {
-            _networkAnimator.SetTrigger(AnimatorHit);
             ChangeHP(-damage);
-            Debug.Log("DAÑO: " + currentLife.Value);
+            TakeHitClientRpc();
         }
+        [ClientRpc]
+        public void TakeHitClientRpc()
+        {
+            _networkAnimator.SetTrigger(AnimatorHit);            
+        }
+        
 
         public void Die()
         {
@@ -124,5 +136,7 @@ namespace Movement.Components
         {
             currentLife.Value += hp;
         }
+
+
     }
 }

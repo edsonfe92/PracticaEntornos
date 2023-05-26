@@ -6,7 +6,7 @@ namespace Netcode
 {
     public class PlayerNetworkConfig : NetworkBehaviour
     {
-        public GameObject characterPrefab;
+        public GameObject characterPrefab;                
 
         public override void OnNetworkSpawn()
         {

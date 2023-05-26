@@ -297,6 +297,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   jumpAmount: 1.3
+  currentLife:
+    m_InternalValue: 0
 --- !u!114 &8653441937024262822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -350,7 +352,7 @@ MonoBehaviour:
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   InLocalSpace: 0
-  Interpolate: 1
+  Interpolate: 0
 --- !u!114 &7630011550789741638
 MonoBehaviour:
   m_ObjectHideFlags: 0
