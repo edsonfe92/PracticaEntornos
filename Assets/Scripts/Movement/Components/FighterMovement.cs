@@ -13,7 +13,7 @@ namespace Movement.Components
         public float speed = 1.0f;
         public float jumpAmount = 1.0f;
 
-        [SerializeField] public NetworkVariable<int> currentLife = new NetworkVariable<int>();
+        [SerializeField] public NetworkVariable<float> currentLife = new NetworkVariable<float>();
         
 
         private Rigidbody2D _rigidbody2D;
@@ -33,6 +33,10 @@ namespace Movement.Components
         private static readonly int AnimatorHit = Animator.StringToHash("hit");
         private static readonly int AnimatorDie = Animator.StringToHash("die");
 
+        //Vida
+
+        public Vida vidaUI;
+
         void Start()
         {
             currentLife.Value = 200;
@@ -40,7 +44,7 @@ namespace Movement.Components
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
-             
+            
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
         }
@@ -114,7 +118,7 @@ namespace Movement.Components
         {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
-        [ServerRpc]
+        [ServerRpc] //(RequireOwnership = false)
         public void TakeHitServerRpc(int damage)
         {
             ChangeHP(-damage);
@@ -123,18 +127,20 @@ namespace Movement.Components
         [ClientRpc]
         public void TakeHitClientRpc()
         {
-            _networkAnimator.SetTrigger(AnimatorHit);            
+            _networkAnimator.SetTrigger(AnimatorHit);
+            vidaUI.currentHP = currentLife.Value;
         }
-        
 
         public void Die()
         {
             _networkAnimator.SetTrigger(AnimatorDie);
         }
 
+
         public void ChangeHP(int hp) 
         {
             currentLife.Value += hp;
+            Debug.Log(currentLife.Value);
         }
 
 

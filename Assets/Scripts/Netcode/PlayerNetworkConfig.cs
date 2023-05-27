@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Movement.Components;
 
 namespace Netcode
 {
@@ -9,6 +10,7 @@ namespace Netcode
 
         public GameObject characterPrefab;
         public GameObject nombrePrefab;
+        public GameObject vidaPrefab;
         public override void OnNetworkSpawn()
         {
             if (!IsOwner) return;
@@ -23,11 +25,17 @@ namespace Netcode
             characterGameObject.transform.SetParent(transform, false);
 
             GameObject nombreGameObject = Instantiate(nombrePrefab);
+            nombreGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
             nombreGameObject.transform.SetParent(transform, false);
-            //Vector3 pos = characterGameObject.transform.position;
-            //nombreGameObject.transform.position = pos;
             nombreGameObject.GetComponent<PlayerName>().playerTransform = characterGameObject.transform;
 
+            GameObject vidaGameObject = Instantiate(vidaPrefab);
+            vidaGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+            characterGameObject.GetComponent<FighterMovement>().vidaUI = vidaGameObject.GetComponent<Vida>();
         }
+
+
+
+
     }
 }
