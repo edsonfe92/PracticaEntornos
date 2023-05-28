@@ -270,8 +270,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifebar: {fileID: 8686287403908394688}
-  maxHP: 10
-  currentHP: 7.6
+  maxHP: 200
+  currentHP: 200
 --- !u!114 &769470564498160080
 MonoBehaviour:
   m_ObjectHideFlags: 0

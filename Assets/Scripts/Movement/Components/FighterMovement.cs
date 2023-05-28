@@ -14,9 +14,10 @@ namespace Movement.Components
         public float jumpAmount = 1.0f;
 
         [SerializeField] public NetworkVariable<float> currentLife = new NetworkVariable<float>();
-        
+
 
         private Rigidbody2D _rigidbody2D;
+        //private NetworkRigidbody2D _networkrigidbody2D;
         private Animator _animator;
         private NetworkAnimator _networkAnimator;
         private Transform _feet;
@@ -39,9 +40,10 @@ namespace Movement.Components
 
         void Start()
         {
-            currentLife.Value = 200;
+            currentLife.Value = vidaUI.maxHP;
 
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            //_networkrigidbody2D = GetComponent<NetworkRigidbody2D>();
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
             
@@ -54,6 +56,8 @@ namespace Movement.Components
             _grounded = Physics2D.OverlapCircle(_feet.position, 0.1f, _floor);
             _animator.SetFloat(AnimatorSpeed, this._direction.magnitude);
             _animator.SetFloat(AnimatorVSpeed, this._rigidbody2D.velocity.y);
+            //_animator.SetFloat(AnimatorVSpeed, this._networkrigidbody2D.velocity.y);
+            //
             _animator.SetBool(AnimatorGrounded, this._grounded);
         }
         void Update()
@@ -66,6 +70,7 @@ namespace Movement.Components
         void FixedUpdate()
         {
             _rigidbody2D.velocity = new Vector2(_direction.x, _rigidbody2D.velocity.y);
+            //_networkrigidbody2D.velocity = new Vector2(_direction.x, _networkrigidbody2D.velocity.y);
         }
 
         [ServerRpc]
@@ -98,6 +103,31 @@ namespace Movement.Components
                     break;
             }
         }
+        //intento de networkrb
+        /*
+        [ServerRpc]
+        public void JumpServerRpc(IJumperReceiver.JumpStage stage)
+        {
+            JumpClientRpc(stage);
+        }
+
+        [ClientRpc]
+        public void JumpClientRpc(IJumperReceiver.JumpStage stage)
+        {
+            switch (stage)
+            {
+                case IJumperReceiver.JumpStage.Jumping:
+                    if (_grounded)
+                    {
+                        float jumpForce = Mathf.Sqrt(jumpAmount * -2.0f * (Physics2D.gravity.y * _networkrigidbody2D.gravityScale));
+                        _networkrigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                    }
+                    break;
+                case IJumperReceiver.JumpStage.Landing:
+                    break;
+            }
+        }*/
+
         [ServerRpc]
         public void Attack1ServerRpc()
         {
@@ -118,7 +148,7 @@ namespace Movement.Components
         {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
-        [ServerRpc] //(RequireOwnership = false)
+        [ServerRpc(RequireOwnership = false)]
         public void TakeHitServerRpc(int damage)
         {
             ChangeHP(-damage);
@@ -135,7 +165,6 @@ namespace Movement.Components
         {
             _networkAnimator.SetTrigger(AnimatorDie);
         }
-
 
         public void ChangeHP(int hp) 
         {
