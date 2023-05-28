@@ -34,7 +34,6 @@ namespace Movement.Components
         private static readonly int AnimatorDie = Animator.StringToHash("die");
 
         //Vida
-
         public Vida vidaUI;
 
         void Start()
@@ -48,6 +47,8 @@ namespace Movement.Components
             
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
+
+
         }
 
         [ServerRpc(RequireOwnership = false)]
@@ -151,8 +152,17 @@ namespace Movement.Components
         {
             ChangeHP(-damage);
             _networkAnimator.SetTrigger(AnimatorHit);
+            TakeHitClientRpc();
+        }
+
+        [ClientRpc]
+        public void TakeHitClientRpc()
+        {
+            Debug.Log(vidaUI);
+            Debug.Log(vidaUI.currentHP);
             vidaUI.currentHP = currentLife.Value;
         }
+        
 
         public void Die()
         {

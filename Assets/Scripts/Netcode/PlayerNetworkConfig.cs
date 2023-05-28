@@ -33,5 +33,6 @@ namespace Netcode
             vidaGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
             characterGameObject.GetComponent<FighterMovement>().vidaUI = vidaGameObject.GetComponent<Vida>();
         }
+
     }
 }
