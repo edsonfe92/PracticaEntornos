@@ -15,7 +15,6 @@ namespace Movement.Components
 
         [SerializeField] public NetworkVariable<float> currentLife = new NetworkVariable<float>();
 
-
         private Rigidbody2D _rigidbody2D;
         //private NetworkRigidbody2D _networkrigidbody2D;
         private Animator _animator;
@@ -40,7 +39,7 @@ namespace Movement.Components
 
         void Start()
         {
-            currentLife.Value = vidaUI.maxHP;
+            InitCharacterServerRpc();
 
             _rigidbody2D = GetComponent<Rigidbody2D>();
             //_networkrigidbody2D = GetComponent<NetworkRigidbody2D>();
@@ -50,6 +49,13 @@ namespace Movement.Components
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void InitCharacterServerRpc()
+        {
+            currentLife.Value = vidaUI.maxHP;
+        }
+
         [ServerRpc]
         void AnimacionesServerRpc()
         {
@@ -131,32 +137,19 @@ namespace Movement.Components
         [ServerRpc]
         public void Attack1ServerRpc()
         {
-            AttackAnimationClientRPC();
-        }
-        [ClientRpc]
-        public void AttackAnimationClientRPC() 
-        {
             _networkAnimator.SetTrigger(AnimatorAttack1);
         }
+
         [ServerRpc]
         public void Attack2ServerRpc()
         {
-            Attack2AnimationClientRPC();
-        }
-        [ClientRpc]
-        public void Attack2AnimationClientRPC()
-        {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
+
         [ServerRpc(RequireOwnership = false)]
         public void TakeHitServerRpc(int damage)
         {
             ChangeHP(-damage);
-            TakeHitClientRpc();
-        }
-        [ClientRpc]
-        public void TakeHitClientRpc()
-        {
             _networkAnimator.SetTrigger(AnimatorHit);
             vidaUI.currentHP = currentLife.Value;
         }
@@ -169,9 +162,7 @@ namespace Movement.Components
         public void ChangeHP(int hp) 
         {
             currentLife.Value += hp;
-            Debug.Log(currentLife.Value);
+            //Debug.Log(currentLife.Value);
         }
-
-
     }
 }
