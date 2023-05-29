@@ -35,7 +35,7 @@ public class LobbySystem : NetworkBehaviour
         {
             Debug.Log("TimerTerminado");
             //Teletransportar personajes
-            //teletransporteServerRpc();
+            teletransporteServerRpc();
             tp = true;
 
         }
