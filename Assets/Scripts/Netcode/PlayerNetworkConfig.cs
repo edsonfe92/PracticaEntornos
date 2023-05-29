@@ -11,6 +11,7 @@ namespace Netcode
         public GameObject characterPrefab;
         public GameObject nombrePrefab;
         public GameObject vidaPrefab;
+        
         public override void OnNetworkSpawn()
         {
             if (!IsOwner) return;
@@ -22,6 +23,11 @@ namespace Netcode
         {
             GameObject vidaGameObject = Instantiate(vidaPrefab);
             vidaGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+
+            // Obtén una referencia al transform del Canvas "VidaUICanvas"
+            Transform vidaUICanvasTransform = GameObject.Find("VidaUICanvas").transform;
+
+            vidaGameObject.transform.SetParent(vidaUICanvasTransform, false);
 
             GameObject characterGameObject = Instantiate(characterPrefab);
             characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);

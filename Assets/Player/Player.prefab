@@ -65,6 +65,7 @@ MonoBehaviour:
   characterPrefab: {fileID: 3010630682321582541, guid: 06b98e5343c113147985cd4116ac1cdb, type: 3}
   nombrePrefab: {fileID: 9159267162049686226, guid: 29da51db61957da449b742ab973bf1cd, type: 3}
   vidaPrefab: {fileID: 8686287404063367545, guid: b76c0d68944f9d24d903a600b347dec2, type: 3}
+  vidaUICanvas: {fileID: 472241030103198063, guid: ae924b0290b004749bdfa8ae9099d199, type: 3}
 --- !u!114 &5749489572719365436
 MonoBehaviour:
   m_ObjectHideFlags: 0

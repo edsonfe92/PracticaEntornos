@@ -32,6 +32,5 @@ public class Vida : MonoBehaviour
             auxValue = 2 * lifebar.fillAmount;
             lifebar.color = new Vector4(1, auxValue, 0, 1);
         }
-        
     }
 }
