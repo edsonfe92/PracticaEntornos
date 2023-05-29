@@ -20,6 +20,9 @@ namespace Netcode
         [ServerRpc]
         public void InstantiateCharacterServerRpc(ulong id)
         {
+            GameObject vidaGameObject = Instantiate(vidaPrefab);
+            vidaGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+
             GameObject characterGameObject = Instantiate(characterPrefab);
             characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
             characterGameObject.transform.SetParent(transform, false);
@@ -28,11 +31,8 @@ namespace Netcode
             nombreGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
             nombreGameObject.transform.SetParent(transform, false);
             nombreGameObject.GetComponent<PlayerName>().playerTransform = characterGameObject.transform;
-
-            GameObject vidaGameObject = Instantiate(vidaPrefab);
-            vidaGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+            
             characterGameObject.GetComponent<FighterMovement>().vidaUI = vidaGameObject.GetComponent<Vida>();
         }
-
     }
 }

@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,6 @@ public class Vida : MonoBehaviour
     public float currentHP;
     float auxValue;
 
-    
     // Start is called before the first frame update
     void Start()
     {

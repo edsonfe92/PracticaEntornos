@@ -38,7 +38,7 @@ namespace Movement.Components
 
         void Start()
         {
-            InitCharacterServerRpc();
+            
 
             _rigidbody2D = GetComponent<Rigidbody2D>();
             //_networkrigidbody2D = GetComponent<NetworkRigidbody2D>();
@@ -48,6 +48,8 @@ namespace Movement.Components
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
 
+            vidaUI = GameObject.FindObjectOfType<Vida>();
+            InitCharacterServerRpc();
 
         }
 
@@ -110,30 +112,6 @@ namespace Movement.Components
                     break;
             }
         }
-        //intento de networkrb
-        /*
-        [ServerRpc]
-        public void JumpServerRpc(IJumperReceiver.JumpStage stage)
-        {
-            JumpClientRpc(stage);
-        }
-
-        [ClientRpc]
-        public void JumpClientRpc(IJumperReceiver.JumpStage stage)
-        {
-            switch (stage)
-            {
-                case IJumperReceiver.JumpStage.Jumping:
-                    if (_grounded)
-                    {
-                        float jumpForce = Mathf.Sqrt(jumpAmount * -2.0f * (Physics2D.gravity.y * _networkrigidbody2D.gravityScale));
-                        _networkrigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                    }
-                    break;
-                case IJumperReceiver.JumpStage.Landing:
-                    break;
-            }
-        }*/
 
         [ServerRpc]
         public void Attack1ServerRpc()
@@ -150,17 +128,17 @@ namespace Movement.Components
         [ServerRpc(RequireOwnership = false)]
         public void TakeHitServerRpc(int damage)
         {
-            ChangeHP(-damage);
+            //ChangeHP(-damage);
             _networkAnimator.SetTrigger(AnimatorHit);
-            TakeHitClientRpc();
+            
+            TakeHitClientRpc(damage);
         }
 
         [ClientRpc]
-        public void TakeHitClientRpc()
+        public void TakeHitClientRpc(int damage)
         {
-            Debug.Log(vidaUI);
-            Debug.Log(vidaUI.currentHP);
-            vidaUI.currentHP = currentLife.Value;
+            //vidaUI.currentHP = currentLife.Value;
+            vidaUI.currentHP -= damage;
         }
         
 
@@ -169,10 +147,10 @@ namespace Movement.Components
             _networkAnimator.SetTrigger(AnimatorDie);
         }
 
+        /*
         public void ChangeHP(int hp) 
         {
             currentLife.Value += hp;
-            //Debug.Log(currentLife.Value);
-        }
+        }*/
     }
 }
