@@ -14,6 +14,7 @@ public class LobbySystem : NetworkBehaviour
     bool tp = false;
     public GameObject characterPrefab;
     public GameObject nombrePrefab;
+    public CameraBoundaries scriptCamera;
 
     void Start()
     {
@@ -32,26 +33,14 @@ public class LobbySystem : NetworkBehaviour
             //Teletransportar personajes
             teletransporteServerRpc();
             tp = true;
+
         }
     }
 
-    [ServerRpc]
-    public void InstantiateCharacterServerRpc(ulong id)
+    [ClientRpc]
+    public void changeCameraClientRpc()
     {
-        /*Debug.Log(spawnPoints[0].position);
-        GameObject characterGameObject = Instantiate(characterPrefab, spawnPoints[nextIndexUnstantiate].position, spawnPoints[nextIndexUnstantiate].rotation);
-        //characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
-        characterGameObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(id);
-        characterGameObject.transform.SetParent(transform, false);
-
-
-        nextIndexUnstantiate++;
-
-        GameObject nombreGameObject = Instantiate(nombrePrefab);
-        nombreGameObject.transform.SetParent(transform, false);
-        //Vector3 pos = characterGameObject.transform.position;
-        //nombreGameObject.transform.position = pos;
-        nombreGameObject.GetComponent<PlayerName>().playerTransform = characterGameObject.transform;*/
+        scriptCamera.changeToBattle();
     }
 
     [ServerRpc]
@@ -60,11 +49,7 @@ public class LobbySystem : NetworkBehaviour
         //NetworkManager.ConnectedClientsIds
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
         {
-            /*if(cont == 4)
-            {
-                break;
-            }*/
-
+            print($"Este es el id del cliente {clientId}");
             if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client))
             {
                 if (client.PlayerObject != null && nextIndextp <= 3)
@@ -76,29 +61,23 @@ public class LobbySystem : NetworkBehaviour
                     }
 
                     // Teletransportar el jugador cambiando su transform
-                    //Transform playerTransform = client.PlayerObject.transform;
-                    //playerTransform.Translate(spawnPoint[nextIndex].localPosition, Space.Self);
-                    //client.PlayerObject.transform.localPosition = spawnPoint[nextIndex].localPosition;
                     Debug.Log(spawnPoints[0].position);
                     GameObject characterGameObject = Instantiate(characterPrefab, spawnPoints[nextIndexUnstantiate].position, spawnPoints[nextIndexUnstantiate].rotation);
-                    //characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
-                    characterGameObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+                    characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
                     characterGameObject.transform.SetParent(client.PlayerObject.transform, false);
-
 
                     nextIndexUnstantiate++;
 
                     GameObject nombreGameObject = Instantiate(nombrePrefab);
+                    nombreGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(clientId);
                     nombreGameObject.transform.SetParent(client.PlayerObject.transform, false);
-                    //Vector3 pos = characterGameObject.transform.position;
-                    //nombreGameObject.transform.position = pos;
                     nombreGameObject.GetComponent<PlayerName>().playerTransform = characterGameObject.transform;
                     print("2" + client.PlayerObject.transform.position);
 
                     nextIndextp++;
-                    //cont++;
                 }
             }
         }
+        changeCameraClientRpc();
     }
 }

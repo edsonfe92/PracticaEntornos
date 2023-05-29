@@ -13,10 +13,10 @@ namespace Movement.Components
         public float speed = 1.0f;
         public float jumpAmount = 1.0f;
 
-        [SerializeField] public NetworkVariable<int> currentLife = new NetworkVariable<int>();
-        
+        [SerializeField] public NetworkVariable<float> currentLife = new NetworkVariable<float>();
 
         private Rigidbody2D _rigidbody2D;
+        //private NetworkRigidbody2D _networkrigidbody2D;
         private Animator _animator;
         private NetworkAnimator _networkAnimator;
         private Transform _feet;
@@ -33,23 +33,40 @@ namespace Movement.Components
         private static readonly int AnimatorHit = Animator.StringToHash("hit");
         private static readonly int AnimatorDie = Animator.StringToHash("die");
 
+        //Vida
+        public Vida vidaUI;
+
         void Start()
         {
-            currentLife.Value = 200;
+            
 
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            //_networkrigidbody2D = GetComponent<NetworkRigidbody2D>();
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
-             
+            
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
+
+            vidaUI = GameObject.FindObjectOfType<Vida>();
+            InitCharacterServerRpc();
+
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void InitCharacterServerRpc()
+        {
+            currentLife.Value = vidaUI.maxHP;
+        }
+
         [ServerRpc]
         void AnimacionesServerRpc()
         {
             _grounded = Physics2D.OverlapCircle(_feet.position, 0.1f, _floor);
             _animator.SetFloat(AnimatorSpeed, this._direction.magnitude);
             _animator.SetFloat(AnimatorVSpeed, this._rigidbody2D.velocity.y);
+            //_animator.SetFloat(AnimatorVSpeed, this._networkrigidbody2D.velocity.y);
+            //
             _animator.SetBool(AnimatorGrounded, this._grounded);
         }
         void Update()
@@ -62,6 +79,7 @@ namespace Movement.Components
         void FixedUpdate()
         {
             _rigidbody2D.velocity = new Vector2(_direction.x, _rigidbody2D.velocity.y);
+            //_networkrigidbody2D.velocity = new Vector2(_direction.x, _networkrigidbody2D.velocity.y);
         }
 
         [ServerRpc]
@@ -94,36 +112,33 @@ namespace Movement.Components
                     break;
             }
         }
+
         [ServerRpc]
         public void Attack1ServerRpc()
         {
-            AttackAnimationClientRPC();
-        }
-        [ClientRpc]
-        public void AttackAnimationClientRPC() 
-        {
             _networkAnimator.SetTrigger(AnimatorAttack1);
         }
+
         [ServerRpc]
         public void Attack2ServerRpc()
         {
-            Attack2AnimationClientRPC();
-        }
-        [ClientRpc]
-        public void Attack2AnimationClientRPC()
-        {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
-        [ServerRpc]
+
+        [ServerRpc(RequireOwnership = false)]
         public void TakeHitServerRpc(int damage)
         {
-            ChangeHP(-damage);
-            TakeHitClientRpc();
+            //ChangeHP(-damage);
+            _networkAnimator.SetTrigger(AnimatorHit);
+            
+            TakeHitClientRpc(damage);
         }
+
         [ClientRpc]
-        public void TakeHitClientRpc()
+        public void TakeHitClientRpc(int damage)
         {
-            _networkAnimator.SetTrigger(AnimatorHit);            
+            //vidaUI.currentHP = currentLife.Value;
+            vidaUI.currentHP -= damage;
         }
         
 
@@ -132,11 +147,10 @@ namespace Movement.Components
             _networkAnimator.SetTrigger(AnimatorDie);
         }
 
+        /*
         public void ChangeHP(int hp) 
         {
             currentLife.Value += hp;
-        }
-
-
+        }*/
     }
 }
