@@ -27,14 +27,14 @@ public class LobbySystem : NetworkBehaviour
     void Update()
     {
         print(SpawnSystemGame.instance.spawnPointsGame);
-        if (timer.IsTimerFinished()&& tp == false)
+        /*if (timer.IsTimerFinished()&& tp == false)
         {
             print("A");
             //Teletransportar personajes
-            teletransporteServerRpc();
+            //teletransporteServerRpc();
             tp = true;
 
-        }
+        }*/
     }
 
     [ClientRpc]
