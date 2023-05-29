@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Netcode
 {
-    public class PlayerNetworkConfig : NetworkBehaviour
+    public class PlayerNetworkConfig : NetworkBehaviour { 
 
 
         private int nextIndex = 0;

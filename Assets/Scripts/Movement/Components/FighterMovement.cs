@@ -72,8 +72,7 @@ namespace Movement.Components
         }
         void Update()
         {
-            if (!IsOwner) return;
-
+            if (!IsOwner) return;            
             AnimacionesServerRpc();
         }
 
