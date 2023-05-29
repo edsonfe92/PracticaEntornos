@@ -11,6 +11,7 @@ public class Timer : MonoBehaviour
     private int contador = 0;
     private int timeValue = 1;
     // Update is called once per frame
+    private bool isTimerFinished = false;
 
     private void OnEnable()
     {
@@ -25,5 +26,20 @@ public class Timer : MonoBehaviour
             timeValue = Tmax - contador;
             UITimerText.text = timeValue.ToString();
         }
+        else
+        {
+            FinishTimer();
+            print("C");
+        }
+    }
+
+    void FinishTimer()
+    {
+        isTimerFinished = true;
+    }
+
+    public bool IsTimerFinished()
+    {
+        return isTimerFinished;
     }
 }

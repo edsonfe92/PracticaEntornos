@@ -2,11 +2,15 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Movement.Components;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Netcode
 {
     public class PlayerNetworkConfig : NetworkBehaviour
     {
+
+        private int nextIndex = 0;
 
         public GameObject characterPrefab;
         public GameObject nombrePrefab;
@@ -29,9 +33,17 @@ namespace Netcode
 
             vidaGameObject.transform.SetParent(vidaUICanvasTransform, false);
 
-            GameObject characterGameObject = Instantiate(characterPrefab);
+            var spawnPoint = SpawnSystemLobby.instance.spawnPointsLobby;
+            GameObject characterGameObject = Instantiate(characterPrefab, spawnPoint[nextIndex].position, spawnPoint[nextIndex].rotation);
             characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+            
+            
+            //characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+            characterGameObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(id);
             characterGameObject.transform.SetParent(transform, false);
+
+
+            nextIndex++;
 
             GameObject nombreGameObject = Instantiate(nombrePrefab);
             nombreGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
