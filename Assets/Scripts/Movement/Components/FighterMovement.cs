@@ -35,7 +35,7 @@ namespace Movement.Components
 
         void Start()
         {
-            currentLife.Value = 200;
+//            InitCharacterServerRpc();
 
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
@@ -44,6 +44,16 @@ namespace Movement.Components
             _feet = transform.Find("Feet");
             _floor = LayerMask.GetMask("Floor");
         }
+        [ServerRpc(RequireOwnership = false)]
+        public void InitCharacterServerRpc() 
+        {
+            
+        }
+        /*private void OnNetworkInstantiate(NetworkMessageInfo info)
+        {
+            currentLife.Value = 200;
+        }*/
+
         [ServerRpc]
         void AnimacionesServerRpc()
         {
@@ -97,35 +107,21 @@ namespace Movement.Components
         [ServerRpc]
         public void Attack1ServerRpc()
         {
-            AttackAnimationClientRPC();
-        }
-        [ClientRpc]
-        public void AttackAnimationClientRPC() 
-        {
             _networkAnimator.SetTrigger(AnimatorAttack1);
         }
+
         [ServerRpc]
         public void Attack2ServerRpc()
         {
-            Attack2AnimationClientRPC();
-        }
-        [ClientRpc]
-        public void Attack2AnimationClientRPC()
-        {
             _networkAnimator.SetTrigger(AnimatorAttack2);
         }
+
         [ServerRpc]
         public void TakeHitServerRpc(int damage)
         {
-            ChangeHP(-damage);
-            TakeHitClientRpc();
+            ChangeHP(-damage);                           
+            _networkAnimator.SetTrigger(AnimatorHit);
         }
-        [ClientRpc]
-        public void TakeHitClientRpc()
-        {
-            _networkAnimator.SetTrigger(AnimatorHit);            
-        }
-        
 
         public void Die()
         {

@@ -10,24 +10,14 @@ namespace UI
         public Button hostButton;
         public Button clientButton;
         public GameObject timeCanvas;
-
-        private void Start()
-        {
-            hostButton.onClick.AddListener(OnHostButtonClicked);
-            clientButton.onClick.AddListener(OnClientButtonClicked);
-        }
-
-        private void OnHostButtonClicked()
+        public void HostStart()
         {
             NetworkManager.Singleton.StartHost();
-            debugPanel.SetActive(false);
-            timeCanvas.SetActive(true);
         }
 
-        private void OnClientButtonClicked()
+        public void ClientStart()
         {
             NetworkManager.Singleton.StartClient();
-            debugPanel.SetActive(false);
         }
     }
 }
