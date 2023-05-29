@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
-public class SpawnSystem : MonoBehaviour
+public class SpawnSystemLobby : MonoBehaviour
 {
-    public static SpawnSystem instance;
+    public static SpawnSystemLobby instance;
 
-    public List<Transform> spawnPoints = new List<Transform>();
+    public Transform[] spawnPointsLobby;
 
     /*public  void AddSpawnPoint(Transform transform)
     {
@@ -23,12 +22,11 @@ public class SpawnSystem : MonoBehaviour
 
     private void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
         }
-        else 
+        else
         {
             Destroy(gameObject);
         }

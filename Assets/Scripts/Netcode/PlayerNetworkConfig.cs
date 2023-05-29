@@ -9,7 +9,6 @@ namespace Netcode
     public class PlayerNetworkConfig : NetworkBehaviour
     {
 
-
         private int nextIndex = 0;
 
         public GameObject characterPrefab;
@@ -24,11 +23,10 @@ namespace Netcode
         [ServerRpc]
         public void InstantiateCharacterServerRpc(ulong id)
         {
-            List<Transform> spawnPoint = SpawnSystem.instance.spawnPoints;
-
+            var spawnPoint = SpawnSystemLobby.instance.spawnPointsLobby;
             GameObject characterGameObject = Instantiate(characterPrefab, spawnPoint[nextIndex].position, spawnPoint[nextIndex].rotation);
-            characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
-            //characterGameObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(id);
+            //characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
+            characterGameObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(id);
             characterGameObject.transform.SetParent(transform, false);
 
 
@@ -39,8 +37,6 @@ namespace Netcode
             //Vector3 pos = characterGameObject.transform.position;
             //nombreGameObject.transform.position = pos;
             nombreGameObject.GetComponent<PlayerName>().playerTransform = characterGameObject.transform;
-
-
         }
     }
 }
