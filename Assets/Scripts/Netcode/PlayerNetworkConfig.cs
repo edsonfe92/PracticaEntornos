@@ -29,19 +29,14 @@ namespace Netcode
             vidaGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
 
             // Obtén una referencia al transform del Canvas "VidaUICanvas"
-            Transform vidaUICanvasTransform = GameObject.Find("VidaUICanvas").transform;
+            //Transform vidaUICanvasTransform = GameObject.Find("VidaUICanvas").transform;
 
-            vidaGameObject.transform.SetParent(vidaUICanvasTransform, false);
+            //vidaGameObject.transform.SetParent(vidaUICanvasTransform, false);
 
             var spawnPoint = SpawnSystemLobby.instance.spawnPointsLobby;
             GameObject characterGameObject = Instantiate(characterPrefab, spawnPoint[nextIndex].position, spawnPoint[nextIndex].rotation);
-            characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
-            
-            
-            //characterGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
             characterGameObject.GetComponent<NetworkObject>().SpawnAsPlayerObject(id);
             characterGameObject.transform.SetParent(transform, false);
-
 
             nextIndex++;
 

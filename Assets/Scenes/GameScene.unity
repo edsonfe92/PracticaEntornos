@@ -1137,6 +1137,16 @@ MonoBehaviour:
       SourcePrefabToOverride: {fileID: 0}
       SourceHashToOverride: 0
       OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 9159267162049686226, guid: 29da51db61957da449b742ab973bf1cd, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
+    - Override: 0
+      Prefab: {fileID: 8686287404063367545, guid: b76c0d68944f9d24d903a600b347dec2, type: 3}
+      SourcePrefabToOverride: {fileID: 0}
+      SourceHashToOverride: 0
+      OverridingTargetPrefab: {fileID: 0}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 1
@@ -4346,6 +4356,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   limiteCamara: {fileID: 932378651}
+  colliderCombate: {fileID: 443551172}
 --- !u!1 &1035671785
 GameObject:
   m_ObjectHideFlags: 0
@@ -14773,7 +14784,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1389431229}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5226336, y: 0.5000019, z: -10}
+  m_LocalPosition: {x: -6.00912, y: 0.5000012, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15128,6 +15139,7 @@ MonoBehaviour:
   timer: {fileID: 411987043}
   characterPrefab: {fileID: 3010630682321582541, guid: 06b98e5343c113147985cd4116ac1cdb, type: 3}
   nombrePrefab: {fileID: 9159267162049686226, guid: 29da51db61957da449b742ab973bf1cd, type: 3}
+  scriptCamera: {fileID: 952196136}
 --- !u!114 &1509209498
 MonoBehaviour:
   m_ObjectHideFlags: 0
