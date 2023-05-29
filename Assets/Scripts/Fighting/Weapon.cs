@@ -23,7 +23,8 @@ namespace Fighting
             IFighterReceiver enemy = otherObject.GetComponent<IFighterReceiver>();            
             enemy?.TakeHitServerRpc(weaponDamage);
 
-            
+            if (enemy?.GetLife() <= 0)
+                enemy.DieServerRpc();
             
         }
     }

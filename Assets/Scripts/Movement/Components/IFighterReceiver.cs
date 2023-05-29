@@ -5,6 +5,7 @@
         public void Attack1ServerRpc();
         public void Attack2ServerRpc();
         public void TakeHitServerRpc(int dmg);
-        public void Die();
+        public void DieServerRpc();
+        public float GetLife();
     }
 }

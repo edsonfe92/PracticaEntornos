@@ -16,7 +16,6 @@ namespace Movement.Components
         [SerializeField] public NetworkVariable<float> currentLife = new NetworkVariable<float>();
 
         private Rigidbody2D _rigidbody2D;
-        //private NetworkRigidbody2D _networkrigidbody2D;
         private Animator _animator;
         private NetworkAnimator _networkAnimator;
         private Transform _feet;
@@ -40,7 +39,6 @@ namespace Movement.Components
         {
 
             _rigidbody2D = GetComponent<Rigidbody2D>();
-            //_networkrigidbody2D = GetComponent<NetworkRigidbody2D>();
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
             
@@ -66,8 +64,6 @@ namespace Movement.Components
             _grounded = Physics2D.OverlapCircle(_feet.position, 0.1f, _floor);
             _animator.SetFloat(AnimatorSpeed, this._direction.magnitude);
             _animator.SetFloat(AnimatorVSpeed, this._rigidbody2D.velocity.y);
-            //_animator.SetFloat(AnimatorVSpeed, this._networkrigidbody2D.velocity.y);
-            //
             _animator.SetBool(AnimatorGrounded, this._grounded);
         }
         void Update()
@@ -79,7 +75,6 @@ namespace Movement.Components
         void FixedUpdate()
         {
             _rigidbody2D.velocity = new Vector2(_direction.x, _rigidbody2D.velocity.y);
-            //_networkrigidbody2D.velocity = new Vector2(_direction.x, _networkrigidbody2D.velocity.y);
         }
 
         [ServerRpc]
@@ -128,7 +123,6 @@ namespace Movement.Components
         [ServerRpc(RequireOwnership = false)]
         public void TakeHitServerRpc(int damage)
         {
-            //ChangeHP(-damage);
             _networkAnimator.SetTrigger(AnimatorHit);
             
             TakeHitClientRpc(damage);
@@ -137,19 +131,30 @@ namespace Movement.Components
         [ClientRpc]
         public void TakeHitClientRpc(int damage)
         {
-            //vidaUI.currentHP = currentLife.Value;
             vidaUI.currentHP -= damage;
         }
         
-        public void Die()
+
+        [ServerRpc(RequireOwnership = false)]
+        public void DieServerRpc()
         {
             _networkAnimator.SetTrigger(AnimatorDie);
+            Invoke("DieClientRpc", 2);
+            
         }
 
-        /*
-        public void ChangeHP(int hp) 
+        [ClientRpc]
+        public void DieClientRpc()
         {
-            currentLife.Value += hp;
-        }*/
+            foreach (Transform child in transform.parent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        public float GetLife()
+        {
+            return vidaUI.currentHP;
+        }
     }
 }

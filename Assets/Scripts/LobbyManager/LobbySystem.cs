@@ -28,12 +28,14 @@ public class LobbySystem : NetworkBehaviour
 
     // Update is called once per frame
     void Update()
+
     {        
         if (timer.IsTimerFinished()&& tp == false)
+
         {
             Debug.Log("TimerTerminado");
             //Teletransportar personajes
-            teletransporteServerRpc();
+            //teletransporteServerRpc();
             tp = true;
 
         }
