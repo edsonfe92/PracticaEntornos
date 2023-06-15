@@ -8,11 +8,10 @@ namespace UI
     {
         public GameObject debugPanel;
         public Button hostButton;
-        public Button clientButton;
-        public GameObject timeCanvas;
+        public Button clientButton;        
         public void HostStart()
         {
-            NetworkManager.Singleton.StartHost();
+            NetworkManager.Singleton.StartHost();            
         }
 
         public void ClientStart()

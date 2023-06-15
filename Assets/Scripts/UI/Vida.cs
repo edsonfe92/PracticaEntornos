@@ -11,15 +11,13 @@ public class Vida : MonoBehaviour
     [Range(0.0f, 200.0f)] //TODO cambiar esto para hacerlo bien
     public float currentHP;
     float auxValue;
-
-    // Start is called before the first frame update
+    
     void Start()
     {
         currentHP = maxHP;
         lifebar.color = Color.green;
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         lifebar.fillAmount = currentHP / maxHP;

@@ -2,36 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
 
-public class Timer : MonoBehaviour
-{
-    // Start is called before the first frame update
-    public Text UITimerText;
-    public int Tmax;
-    private int contador = 0;
-    private int timeValue = 1;
-    // Update is called once per frame
+public class Timer : MonoBehaviour 
+{ 
+    public int tMax;
+    /*private int contador = 0;
+    private int timeValue = 1;  */  
     private bool isTimerFinished = false;
 
-    private void OnEnable()
+    Coroutine timer;
+
+    /*private void OnEnable()
     {
             InvokeRepeating("Cronometro", 0f, 1f);
+    }*/
+    
+    public void StartTimerServerRpc() 
+    {
+        timer = StartCoroutine(TimerCounter());
     }
-
-    void Cronometro()
+    public void StopTimerServerRpc() 
+    {
+        StopCoroutine(TimerCounter());
+    }
+    public void SetTimerServerRpc(int a) 
+    {
+        tMax= a;
+    }
+    IEnumerator TimerCounter() 
+    {
+        while (tMax> 0)
+        {
+            yield return new WaitForSeconds(1);
+            tMax--;
+            if (tMax<= 0)
+            {                
+                FinishTimer();
+            }
+        }        
+    }
+   /* void Cronometro()
     {
         if (timeValue > 0)
         {
             contador++;
-            timeValue = Tmax - contador;
+            timeValue = tMax - contador;
             UITimerText.text = timeValue.ToString();
         }
         else
         {
-            FinishTimer();
-            print("C");
+            FinishTimer();            
         }
-    }
+    }*/
 
     void FinishTimer()
     {

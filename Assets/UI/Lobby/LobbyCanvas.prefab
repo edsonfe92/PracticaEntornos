@@ -3258,15 +3258,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2851643529469290028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89327d790fe33e44cbe2b830c9a1c0e0, type: 3}
+  m_Script: {fileID: 11500000, guid: e7962f680eeff084e8d0982aba705a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomName: 
-  isPrivate: 0
-  roomSize: 0
-  roundTime: 0
-  numRounds: 0
-  password: 
 --- !u!1 &2939635725671188497
 GameObject:
   m_ObjectHideFlags: 0

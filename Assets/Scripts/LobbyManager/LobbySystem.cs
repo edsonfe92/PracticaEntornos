@@ -7,37 +7,45 @@ using Netcode;
 public class LobbySystem : NetworkBehaviour
 {
     public Timer timer;
-    //int cont = 0;
-    private int nextIndexUnstantiate = 0;
-    private int nextIndextp = 0;
+    public int maxTimeLobby;
     Transform[] spawnPoints;
     bool tp = false;
     public GameObject characterPrefab;
     public GameObject nombrePrefab;
-    public CameraBoundaries scriptCamera;
+    public CameraBoundaries scriptCamera;    
 
 
     private int i = 0;
 
     void Start()
     {
-
-        spawnPoints = SpawnSystemGame.instance.spawnPointsGame;
-        Debug.Log(spawnPoints[0].position);
+        spawnPoints = SpawnSystemGame.instance.spawnPointsGame;        
     }
-
-    // Update is called once per frame
+    private void OnEnable()
+    {
+        timer.SetTimerServerRpc(maxTimeLobby);
+        timer.StartTimerServerRpc();
+    }
     void Update()
 
-    {        
-        if (timer.IsTimerFinished()&& tp == false)
+    {
+        if (tp) return;
 
-        {
-            Debug.Log("TimerTerminado");
-            //Teletransportar personajes
-            teletransporteServerRpc();
+        ConnectedClientsServerRpc();
+        
+        if (timer.IsTimerFinished())
+        {            
+            teletransporteServerRpc();            
             tp = true;
-
+        }
+    }
+    [ServerRpc(RequireOwnership = false)]
+    public void ConnectedClientsServerRpc() 
+    {
+        if (NetworkManager.Singleton.ConnectedClients.Count < 2)
+        {
+            timer.SetTimerServerRpc(maxTimeLobby);
+            timer.StopTimerServerRpc();            
         }
     }
 
@@ -53,9 +61,9 @@ public class LobbySystem : NetworkBehaviour
         Debug.Log(s);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void teletransporteServerRpc()
-    {
+    {        
         DebugClientRpc("Dentro teletransporteRpc");
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
         {            
