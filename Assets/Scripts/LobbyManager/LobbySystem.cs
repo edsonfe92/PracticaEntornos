@@ -12,7 +12,8 @@ public class LobbySystem : NetworkBehaviour
     bool tp = false;
     public GameObject characterPrefab;
     public GameObject nombrePrefab;
-    public CameraBoundaries scriptCamera;    
+    public CameraBoundaries scriptCamera;
+        
 
 
     private int i = 0;
@@ -20,8 +21,9 @@ public class LobbySystem : NetworkBehaviour
     void Start()
     {
         spawnPoints = SpawnSystemGame.instance.spawnPointsGame;        
-    }
-    private void OnEnable()
+    }    
+    
+    public void StartTimer() 
     {
         timer.SetTimerServerRpc(maxTimeLobby);
         timer.StartTimerServerRpc();
@@ -34,8 +36,8 @@ public class LobbySystem : NetworkBehaviour
         ConnectedClientsServerRpc();
         
         if (timer.IsTimerFinished())
-        {            
-            teletransporteServerRpc();            
+        {                     
+            TeletransporteServerRpc();            
             tp = true;
         }
     }
@@ -62,18 +64,21 @@ public class LobbySystem : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void teletransporteServerRpc()
-    {        
-        DebugClientRpc("Dentro teletransporteRpc");
+    public void TeletransporteServerRpc()
+    {
+        int numPlayers = 0;
+        DebugClientRpc("Dentro TeletransporteRpc");
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
         {            
             if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client))
             {
+                numPlayers++;
                 client.PlayerObject.transform.position = SpawnSystemGame.instance.spawnPointsGame[i].position;                
                 i++;                
             }
         }
-        changeCameraClientRpc();
+        changeCameraClientRpc();        
+        GameManager.instance.startMatch = true;
     }
 }
 

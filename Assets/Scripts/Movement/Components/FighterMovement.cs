@@ -32,6 +32,9 @@ namespace Movement.Components
         private static readonly int AnimatorHit = Animator.StringToHash("hit");
         private static readonly int AnimatorDie = Animator.StringToHash("die");
 
+        //Countdown 
+        public bool countDownActive = false;
+
         //Vida
         public Vida vidaUI;
 
@@ -80,6 +83,7 @@ namespace Movement.Components
         [ServerRpc]
         public void MoveServerRpc(IMoveableReceiver.Direction direction)
         {
+            if (countDownActive) return;
             if (direction == IMoveableReceiver.Direction.None)
             {
                 this._direction = Vector3.zero;
@@ -94,6 +98,7 @@ namespace Movement.Components
         [ServerRpc]
         public void JumpServerRpc(IJumperReceiver.JumpStage stage)
         {
+            if (countDownActive) return;
             switch (stage)
             {
                 case IJumperReceiver.JumpStage.Jumping:
@@ -139,6 +144,7 @@ namespace Movement.Components
         public void DieServerRpc()
         {
             _networkAnimator.SetTrigger(AnimatorDie);
+            GameManager.instance.PlayerDead();
             Invoke("DieClientRpc", 2);
             
         }
@@ -146,10 +152,7 @@ namespace Movement.Components
         [ClientRpc]
         public void DieClientRpc()
         {
-            foreach (Transform child in transform.parent)
-            {
-                Destroy(child.gameObject);
-            }
+            //Cambiar cámara?
         }
 
         public float GetLife()

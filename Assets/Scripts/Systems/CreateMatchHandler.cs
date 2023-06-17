@@ -32,18 +32,18 @@ public class CreateMatchHandler : MonoBehaviour
     {
         switch (index)
         {
-            case 0: gameConfig.roomSize = 30; break;
-            case 1: gameConfig.roomSize = 60; break;
-            case 2: gameConfig.roomSize = 120; break;
+            case 0: gameConfig.roundTime = 30; break;
+            case 1: gameConfig.roundTime = 60; break;
+            case 2: gameConfig.roundTime = 120; break;
         }
     }
     public void DropdownNumRounds(int index)
     {
         switch (index)
         {
-            case 0: gameConfig.roomSize = 1; break;
-            case 1: gameConfig.roomSize = 3; break;
-            case 2: gameConfig.roomSize = 5; break;
+            case 0: gameConfig.numRounds = 1; break;
+            case 1: gameConfig.numRounds = 3; break;
+            case 2: gameConfig.numRounds = 5; break;
         }
     }
     public void ToggleIsPrivate(bool b)
