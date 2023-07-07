@@ -11,18 +11,21 @@ namespace Movement.Components
     public sealed class FighterMovement : NetworkBehaviour, IMoveableReceiver, IJumperReceiver, IFighterReceiver
     {
         public float speed = 1.0f;
-        public float jumpAmount = 1.0f;
-
-        [SerializeField] public NetworkVariable<float> currentLife = new NetworkVariable<float>();
+        public float jumpAmount = 1.0f;        
 
         private Rigidbody2D _rigidbody2D;
         private Animator _animator;
         private NetworkAnimator _networkAnimator;
         private Transform _feet;
         private LayerMask _floor;
+        
 
         private Vector3 _direction = Vector3.zero;
         private bool _grounded = true;
+
+        public bool displayVidaUI;
+
+        public PlayerName playerNameScript;
 
         private static readonly int AnimatorSpeed = Animator.StringToHash("speed");
         private static readonly int AnimatorVSpeed = Animator.StringToHash("vspeed");
@@ -35,12 +38,15 @@ namespace Movement.Components
         //Countdown 
         public bool countDownActive = false;
 
+        //Lobby
+        public bool inLobby = true;
+
         //Vida
         public Vida vidaUI;
 
         void Start()
         {
-
+            
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
             _networkAnimator = GetComponent<NetworkAnimator>();
@@ -49,16 +55,10 @@ namespace Movement.Components
             _floor = LayerMask.GetMask("Floor");
 
             vidaUI = GameObject.FindObjectOfType<Vida>();
-            InitCharacterServerRpc();
+            vidaUI.gameObject.SetActive(false);
 
         }
 
-
-        [ServerRpc(RequireOwnership = false)]
-        public void InitCharacterServerRpc()
-        {
-            currentLife.Value = vidaUI.maxHP;
-        }
 
 
         [ServerRpc]
@@ -70,10 +70,11 @@ namespace Movement.Components
             _animator.SetBool(AnimatorGrounded, this._grounded);
         }
         void Update()
-        {
+        {            
             if (!IsOwner) return;            
             AnimacionesServerRpc();
         }
+
 
         void FixedUpdate()
         {
@@ -128,36 +129,58 @@ namespace Movement.Components
         [ServerRpc(RequireOwnership = false)]
         public void TakeHitServerRpc(int damage)
         {
+            if (inLobby) return;
             _networkAnimator.SetTrigger(AnimatorHit);
-            
+            vidaUI.currentHP.Value -= damage;
             TakeHitClientRpc(damage);
         }
 
         [ClientRpc]
         public void TakeHitClientRpc(int damage)
         {
-            vidaUI.currentHP -= damage;
+            
         }
         
 
         [ServerRpc(RequireOwnership = false)]
         public void DieServerRpc()
         {
+            Debug.Log("Muerto");
             _networkAnimator.SetTrigger(AnimatorDie);
-            GameManager.instance.PlayerDead();
-            Invoke("DieClientRpc", 2);
+            GameManager.instance.PlayerDeadServerRpc();
+            DieClientRpc();
             
         }
 
         [ClientRpc]
         public void DieClientRpc()
         {
-            //Cambiar cámara?
+            countDownActive = true;
+            GetComponent<BoxCollider2D>().enabled = false;
+            GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
         }
+
+        [ClientRpc]
+        public void EneableHealthUIClientRpc(bool a) 
+        {
+            vidaUI.gameObject.SetActive(a);
+        }
+
+        [ClientRpc]
+        public void EneableWinnerUIClientRpc(string winnerName) 
+        {            
+            vidaUI.SetWinnersDisplay(winnerName);
+        }
+        [ClientRpc]
+        public void DisableWinnerUIClientRpc() 
+        {
+            vidaUI.DisableWinnersDisplay();
+        }
+
 
         public float GetLife()
         {
-            return vidaUI.currentHP;
+            return vidaUI.currentHP.Value;
         }
     }
 }

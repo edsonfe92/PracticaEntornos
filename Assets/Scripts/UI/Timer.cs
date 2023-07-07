@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using System;
 
 public class Timer : NetworkBehaviour
 {
@@ -14,10 +15,6 @@ public class Timer : NetworkBehaviour
 
     Coroutine timer;
 
-    /*private void OnEnable()
-    {
-            InvokeRepeating("Cronometro", 0f, 1f);
-    }*/
     [ServerRpc]
     public void StartTimerServerRpc() 
     {
@@ -65,7 +62,12 @@ public class Timer : NetworkBehaviour
         isTimerFinished = true;
         isTimerActive = false;
     }
-
+    [ServerRpc]
+    public void ResetTimerServerRpc() 
+    {
+        isTimerFinished = false;
+        isTimerActive = false;
+    }
     public bool IsTimerFinished()
     {
         return isTimerFinished;

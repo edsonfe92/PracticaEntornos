@@ -9,16 +9,21 @@ public class CameraBoundaries : MonoBehaviour
     public Collider2D limiteCamara;
     CinemachineConfiner confiner;
     public Collider2D colliderCombate;
+    public Collider2D colliderLobby;
     void Start()
-    {
+    {        
         confiner = GetComponent<CinemachineConfiner>();
-        confiner.m_BoundingShape2D = limiteCamara;
-
+        confiner.m_BoundingShape2D = limiteCamara;        
     }
     
     public void changeToBattle()
     {
         confiner.m_BoundingShape2D = colliderCombate;
+    }
+    public void changeToLobby() 
+    {
+        Debug.Log("DENTRO DEL CHANGE");
+        confiner.m_BoundingShape2D = limiteCamara;
     }
 
 }

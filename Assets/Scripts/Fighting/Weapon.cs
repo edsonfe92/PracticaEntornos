@@ -24,8 +24,7 @@ namespace Fighting
             enemy?.TakeHitServerRpc(weaponDamage);
 
             if (enemy?.GetLife() <= 0)
-                enemy.DieServerRpc();
-            
+                enemy.DieServerRpc();           
         }
     }
 }

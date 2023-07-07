@@ -12,8 +12,7 @@ public class CreateMatchHandler : MonoBehaviour
     }
     public void InputFieldRoomName(string name)
     {
-        gameConfig.roomName = name;
-        Debug.Log(gameConfig.roomName);
+        gameConfig.roomName = name;        
     }
     public void InputFieldPassword(string name)
     {

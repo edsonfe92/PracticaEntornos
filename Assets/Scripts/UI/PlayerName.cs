@@ -1,23 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 using TMPro;
+using Unity.Collections;
+using Movement.Components;
 
-public class PlayerName : MonoBehaviour
-{
-    public string name;
+public class PlayerName : NetworkBehaviour
+{    
     public TMP_Text playerNameText;
 
-    public Transform playerTransform;
+    public NetworkVariable<FixedString64Bytes> playerName = new NetworkVariable<FixedString64Bytes>("Player", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    void Start()
-    {
 
+    public override void OnNetworkSpawn()
+    {        
+        playerNameText.text = playerName.Value.ToString();
+        playerName.OnValueChanged += OnNameChanged;
     }
 
-    void Update()
+    private void OnNameChanged(FixedString64Bytes oldVlaue, FixedString64Bytes newValue) 
     {
-        playerNameText.text = name;
-        transform.localPosition = new Vector3(playerTransform.localPosition.x, playerTransform.localPosition.y + 0.5f, playerTransform.localPosition.z);
+        playerName.Value = newValue;
+        playerNameText.text = playerName.Value.ToString();
     }
 }

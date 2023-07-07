@@ -1935,6 +1935,7 @@ MonoBehaviour:
   debugPanel: {fileID: 1229873777488125637}
   hostButton: {fileID: 1229873777781101469}
   clientButton: {fileID: 1229873776870574867}
+  clientPlayerName: 
 --- !u!1 &1229873777488125637
 GameObject:
   m_ObjectHideFlags: 0
@@ -2445,7 +2446,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5183967289163323264}
+        m_TargetAssemblyTypeName: UI.UIHandler, Assembly-CSharp
+        m_MethodName: PlayerNameInputfield
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []

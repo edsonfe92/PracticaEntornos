@@ -4,16 +4,22 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 using Netcode;
+using TMPro;
 using Movement.Components;
 
 public class GameManager : NetworkBehaviour
 {
     public static GameManager instance;
+
+    public List<GameObject> networkClientGameObjectList = new List<GameObject>();
     
     //Timers & Coundtdowns
-    private Timer matchTimer;
-    private int roundCountdown;
-    
+    public Timer matchTimer;
+    public Timer toLobbyTimer;
+
+    public TMP_Text timerMatchText;
+    public TMP_Text timerToLobbyText;
+
     //Match Configurations
     public GameConfig gameConfig;
 
@@ -24,7 +30,13 @@ public class GameManager : NetworkBehaviour
     public bool roundEnded;
     public bool startMatch;
 
-    public NetworkClient winner;
+    public GameObject winner;
+
+    //LobbyManager
+    public LobbySystem lobbySystem;
+
+    [Header("Camera")]
+    public CameraBoundaries scriptCamera;
 
     private void Awake()
     {
@@ -38,98 +50,172 @@ public class GameManager : NetworkBehaviour
         }
     }
     private void Start()
-    {
-        GetNumberPlayersConnectedServerRpc();
-        roundCountdown = 3;
+    {                
         currentRound = 0;
-        currentPlayingPlayers = numPlayers;
-        matchTimer = GetComponent<Timer>();
-        matchTimer.SetTimerServerRpc(gameConfig.roundTime);
+        currentPlayingPlayers = numPlayers;        
+
     }
+    public override void OnNetworkSpawn()
+    {
+        matchTimer.tMax.OnValueChanged += OnTimerMatchChanged;
+        toLobbyTimer.tMax.OnValueChanged += OnTimerToLobbyChanged;
+    }
+    public override void OnNetworkDespawn()
+    {
+        matchTimer.tMax.OnValueChanged -= OnTimerMatchChanged;
+        toLobbyTimer.tMax.OnValueChanged -= OnTimerToLobbyChanged;
+    }
+
+    private void OnTimerToLobbyChanged(int previousValue, int newValue)
+    {
+        timerToLobbyText.text = newValue.ToString();
+    }
+
+    private void OnTimerMatchChanged(int previousValue, int newValue)
+    {
+        timerMatchText.text = newValue.ToString();
+    }
+    //Bucle del juego
     private void Update()
     {
         if (!startMatch) return;
 
-        if (matchTimer.IsTimerFinished())
+        if (toLobbyTimer.IsTimerFinished())
         {
-            GetWinnerByTimeServerRpc();
+            ResetMatchServerRpc();
+            MovePlayersToLobbyServerRpc();
+            startMatch = false;
         }
 
-        if (!matchTimer.IsTimerFinished() || !matchTimer.IsTimerActive())
-        {
-            matchTimer.StartTimerServerRpc();
+        if (matchTimer.IsTimerFinished())
+        {         
+            GetWinnerByTimeServerRpc();
+            roundEnded = true;
         }
+
+        if (toLobbyTimer.IsTimerActive()) return;
+
+        if (!matchTimer.IsTimerActive())
+        {            
+            matchTimer.StartTimerServerRpc();
+        }        
         
         if (currentRound == gameConfig.numRounds)
         {            
-            DisplayMatchWinner();
-            CountDownNewLobby();
-            MovePlayersToLobby();
-            ResetMatch();
+            //FINAL TODAS LAS RONDAS
+            roundEnded = false;
+            GetMatchWinnerServerRpc();
+            DisplayMatchWinnerServerRpc();            
+            CountDownNewLobby();            
+            
         }
         if (roundEnded)
         {
-            ReSpawnPlayers();
-            CountDownRoundStart();            
+            //RESET DE LA RONDA
+            Debug.Log("RONDA NUMERO " + currentRound + " TERMINADA");
+            roundEnded = false;
+            ReSpawnPlayersServerRpc();
+            CountDownRoundStart(3);
+            currentPlayingPlayers = numPlayers;
             currentRound++;
         }
     }
-    [ServerRpc]
-    private void GetNumberPlayersConnectedServerRpc() 
+
+    public void SetUpMatchTimer() 
     {
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
-        {
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client))
-            {
-                numPlayers++;
-            }
-        }
+        matchTimer.SetTimerServerRpc(gameConfig.roundTime);
     }
+    
     [ServerRpc]
     private void GetWinnerByTimeServerRpc()
-    {        
-        float maxHealth = float.MinValue;
-        NetworkClient winnerPlayer = null;
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
+    {
+        GameObject roundWinnerPlayer = null;
+        float maxHealth = float.MinValue;        
+        foreach (var player in networkClientGameObjectList)
         {
-            
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client))
-            {                
-                if (client.PlayerObject.transform.GetChild(0).gameObject.GetComponent<FighterMovement>().currentLife.Value > maxHealth) 
-                {
-                    maxHealth = client.PlayerObject.transform.GetChild(0).gameObject.GetComponent<FighterMovement>().currentLife.Value;
-                    winnerPlayer = client; 
-                }            
+            if (player.GetComponent<FighterMovement>().vidaUI.currentHP.Value > maxHealth)
+            {
+                maxHealth = player.GetComponent<FighterMovement>().vidaUI.currentHP.Value;
+                roundWinnerPlayer = player;
             }
         }
-        winner = winnerPlayer;
+        roundWinnerPlayer.GetComponent<FighterMovement>().vidaUI.currentPoints.Value++;                
+    }
+    [ServerRpc]
+    private void GetMatchWinnerServerRpc() 
+    {
+        int maxPoints = 0;
+        foreach (var player in networkClientGameObjectList)
+        {
+            if (player.GetComponent<FighterMovement>().vidaUI.currentPoints.Value > maxPoints)
+            {
+                maxPoints = player.GetComponent<FighterMovement>().vidaUI.currentPoints.Value;
+                winner = player;
+            }
+        }
+    }
+    [ServerRpc]
+    private void ResetMatchServerRpc()
+    {
+        currentRound = 0;
+        matchTimer.ResetTimerServerRpc();
+        toLobbyTimer.ResetTimerServerRpc();
+        currentPlayingPlayers = 0;
     }
 
-    private void ResetMatch()
+    [ServerRpc]
+    private void MovePlayersToLobbyServerRpc()
     {
-        throw new NotImplementedException();
-    }
+        Debug.Log("ENDING MATCH");
+        Debug.Log("TP LOBBY");
+        int i = 0;
+        
+        foreach (GameObject player in networkClientGameObjectList)
+        {
+            Debug.Log("PLAYER POS INI: " + player.transform.position);
+            Debug.Log("SpawnPoint: " + SpawnSystemGame.instance.spawnPointsGame[i+4].position);
+            player.transform.position = SpawnSystemGame.instance.spawnPointsGame[i+4].position;
+            Debug.Log("PLAYER POS fin: " + player.transform.position);
+             
+            player.GetComponent<FighterMovement>().EneableHealthUIClientRpc(false);
+            player.GetComponent<FighterMovement>().DisableWinnerUIClientRpc();
+            player.GetComponent<FighterMovement>().inLobby = true;
+            i++;
+        }
+        
+        lobbySystem.timer.SetTimerServerRpc(lobbySystem.maxTimeLobby+5);
+        lobbySystem.timer.StartTimerServerRpc();
+        lobbySystem.tp = false;
 
-    private void MovePlayersToLobby()
-    {
-        throw new NotImplementedException();
+        changeCameraClientRpc();
+
+        foreach (GameObject p in networkClientGameObjectList)
+        {
+            Debug.Log("PLAYER POS INI: " + p.transform.position);
+        }
+
+
     }
 
     private void CountDownNewLobby()
     {
-        throw new NotImplementedException();
+        toLobbyTimer.SetTimerServerRpc(15);
+        toLobbyTimer.StartTimerServerRpc();
+    }   
+    [ServerRpc]
+    private void DisplayMatchWinnerServerRpc()
+    {        
+        foreach (GameObject player in networkClientGameObjectList)
+        {
+            player.GetComponent<FighterMovement>().EneableWinnerUIClientRpc(winner.GetComponent<FighterMovement>().playerNameScript.playerName.Value.ToString());
+        }
     }
 
-    private void DisplayMatchWinner()
+    private void CountDownRoundStart(int roundCountdownTime)
     {
-        throw new NotImplementedException();
+        StartCoroutine(Countdown(roundCountdownTime));
     }
-
-    private void CountDownRoundStart()
-    {
-        StartCoroutine(Countdown());
-    }
-    IEnumerator Countdown() 
+    IEnumerator Countdown(int roundCountdown) 
     {
         while ( roundCountdown > 0)
         {
@@ -137,80 +223,115 @@ public class GameManager : NetworkBehaviour
             roundCountdown--;
             if (roundCountdown <= 0)
             {
-                ReConfigPlayersMovement();
+                ReConfigPlayersMovementServerRpc();
+                SetUpMatchTimer();
             }
         }
     }
-
-    private void ReConfigPlayersMovement()
+    [ServerRpc]
+    private void ReConfigPlayersMovementServerRpc()        
     {
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
+        foreach (var player in networkClientGameObjectList)
         {
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client))
-            {
-                DisablePlayerMovement(client, false);
-            }
+            DisablePlayerMovement(player, false);
         }
-    }
 
-    private void ReSpawnPlayers()
+
+    }
+    [ServerRpc]
+    private void ReSpawnPlayersServerRpc()
     {
+        Debug.Log("TP COMBATE");
         int i = 0;
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
+        foreach (var player in networkClientGameObjectList)
         {
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client))
-            {
-                client.PlayerObject.transform.position = SpawnSystemGame.instance.spawnPointsGame[i].position;
-                foreach (Transform child in client.PlayerObject.transform)
-                {
-                    child.gameObject.SetActive(true);
-                }
-                DisablePlayerMovement(client,true);
-                i++;
-            }
+            player.transform.position = SpawnSystemGame.instance.spawnPointsGame[i].position;
+            player.GetComponent<FighterMovement>().vidaUI.currentHP.Value = player.GetComponent<FighterMovement>().vidaUI.maxHP;
+            DisablePlayerMovement(player, true);
+            player.GetComponent<Animator>().Play("idle");
+            i++;
         }
     }
-    private void DisablePlayerMovement(NetworkClient client, bool b) 
-    { 
-        client.PlayerObject.transform.GetChild(0).gameObject.GetComponent<FighterMovement>().countDownActive = b;
+    private void DisablePlayerMovement(GameObject player, bool b) 
+    {        
+        player.GetComponent<FighterMovement>().countDownActive = b;
+        if (!b) 
+        {
+            player.GetComponent<BoxCollider2D>().enabled = true;
+            player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;
+            player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+        } 
+        
+        
     }
-    public void PlayerDead() 
+    [ServerRpc]
+    public void PlayerDeadServerRpc() 
     {
+        Debug.Log("JUGADOR MUERTO");
         currentPlayingPlayers--;
         if (currentPlayingPlayers <= 1)
         {
-            CheckLastOneStanding();
+            Debug.Log("Solo queda 1 jugador, check de victoria");
+            CheckLastOneStandingServerRpc();
             roundEnded = true;
         }
     }
-    public void PlayerDisconnected() 
+    [ServerRpc]
+    public void PlayerDisconnectedServerRpc() 
     {
         currentPlayingPlayers--;
         numPlayers--;
         if (currentPlayingPlayers <= 1 || numPlayers <= 1)
         {
-            CheckLastOneStanding();
+            CheckLastOneStandingServerRpc();
             roundEnded = true;
         }
     }
+    [ServerRpc]
+    public void CheckLastOneStandingServerRpc() 
+    {
+        foreach (var player in networkClientGameObjectList)
+        {
+            if (player.GetComponent<FighterMovement>().vidaUI.currentHP.Value > 0)
+            {                
+                player.GetComponent<FighterMovement>().vidaUI.currentPoints.Value++;
+            }
+        }
+    }
 
-    public void CheckLastOneStanding() 
+    public void GenerateClienObjectNetworkList() 
     {
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClients.Keys)
         {
             if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client))
             {
-                Debug.Log("Cliente: " + client);
-                Debug.Log("ClientObject: " + client.PlayerObject.name);
-                Debug.Log("Nombre Hijo 0: " + client.PlayerObject.transform.GetChild(0).name);
-                Debug.Log("Componente: " + client.PlayerObject.transform.GetChild(0).gameObject.GetComponent<FighterMovement>());
-
-                if (client.PlayerObject.transform.GetChild(0).gameObject.GetComponent<FighterMovement>().currentLife.Value > 0)
+                if (client.ClientId == 0)
                 {
-                    winner = client;
+                    networkClientGameObjectList.Add(client.PlayerObject.transform.GetChild(0).gameObject);
                 }
+                else 
+                {
+                    networkClientGameObjectList.Add(client.PlayerObject.gameObject);
+                }                
             }
         }
+        numPlayers = networkClientGameObjectList.Count;
+        currentPlayingPlayers = numPlayers;
     }
-    
+
+    [ServerRpc]
+    public void SetAllHealthUIServerRpc() 
+    {        
+        for (int i = 0; i < networkClientGameObjectList.Count; i++)
+        {            
+            networkClientGameObjectList[i].GetComponent<FighterMovement>().vidaUI.SetHealthUIPositionClientRpc(i);
+        }
+        
+    }
+    [ClientRpc]
+    public void changeCameraClientRpc()
+    {
+        Debug.Log("CHANGE CAMERA");
+        scriptCamera.changeToLobby();
+    }
 }

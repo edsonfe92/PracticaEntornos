@@ -63,11 +63,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timer: {fileID: 752261605}
-  maxTimeLobby: 30
+  maxTimeLobby: 10
   characterPrefab: {fileID: 3010630682321582541, guid: 06b98e5343c113147985cd4116ac1cdb, type: 3}
   nombrePrefab: {fileID: 9159267162049686226, guid: 29da51db61957da449b742ab973bf1cd, type: 3}
   scriptCamera: {fileID: 0}
-  gameManager: {fileID: 0}
 --- !u!114 &752261605
 MonoBehaviour:
   m_ObjectHideFlags: 0
