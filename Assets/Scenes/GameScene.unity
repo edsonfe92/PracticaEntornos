@@ -2176,6 +2176,55 @@ PolygonCollider2D:
       - {x: -10.009123, y: 4.007537}
       - {x: -10.00912, y: -3.4736686}
       - {x: 9.990273, y: -3.473669}
+--- !u!1 &479729856
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 479729857}
+  - component: {fileID: 479729858}
+  m_Layer: 0
+  m_Name: Vidas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &479729857
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479729856}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.885637, y: 1.1989868, z: 2.6564589}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &479729858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479729856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc6c39c07e7d6b245a593dfe252dd20f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidaCanvas:
+  - {fileID: 8686287404063367545, guid: b76c0d68944f9d24d903a600b347dec2, type: 3}
+  - {fileID: 8686287404063367545, guid: ced38687e690f5d45bfb3445102b83b5, type: 3}
+  - {fileID: 8686287404063367545, guid: d68ed11fd1f80a84abe74b39d21ff70c, type: 3}
+  - {fileID: 8686287404063367545, guid: 43d7d5f81c2673147b549fc5cfbeadf9, type: 3}
 --- !u!1 &496243795
 GameObject:
   m_ObjectHideFlags: 0
@@ -14213,7 +14262,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1389431229}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.00912, y: 0.5000012, z: -10}
+  m_LocalPosition: {x: -4.9243736, y: 0.50000143, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -15114,6 +15163,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1229873777290247925, guid: 92a03f2b585ed3d4ab58cb0e0316a3a0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1229873777488125658, guid: 92a03f2b585ed3d4ab58cb0e0316a3a0, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3235630795472227493, guid: 92a03f2b585ed3d4ab58cb0e0316a3a0, type: 3}

@@ -24,9 +24,9 @@ namespace Netcode
 
         [ServerRpc]
         public void InstantiateCharacterServerRpc(ulong id)
-
         {
-            GameObject vidaGameObject = Instantiate(vidaPrefab);
+            var vidaCanvas = VidaSystem.instance.vidaCanvas;
+            GameObject vidaGameObject = Instantiate(vidaCanvas[nextIndex]);
             vidaGameObject.GetComponent<NetworkObject>().SpawnWithOwnership(id);
 
             // Obtén una referencia al transform del Canvas "VidaUICanvas"
